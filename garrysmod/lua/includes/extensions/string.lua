@@ -344,9 +344,28 @@ function string.ToColor( str )
 
 end
 
-function string.Comma( number, period )
-	number = tostring( number )
+local function addCommas( str, period )
+
 	local symbol = period and "." or ","
-	-- We reverse so that we can start in patterns of three and not have to deal with 1-2 num precedes( 25,000,000 )
-	return number:reverse():gsub( "(...)", "%1" .. symbol ):gsub( "%" .. symbol .. "$", "" ):reverse()
+
+	str = str:reverse():gsub( "(%d%d%d%-?)", "%1" .. symbol ):reverse()
+
+	if ( str:sub( 1, 1 ) == symbol ) then return str:sub( 2 ) end
+
+	return str
+
+end
+
+function string.Comma( number, period )
+
+	local size = math.abs( number )
+	if ( size < 1e3 or size >= 1e14 ) then return tostring( number ) end
+
+	number = tostring( number )
+
+	local dpos = number:find( ".", 0, true )
+	if ( dpos ) then return addCommas( number:sub( 1, dpos - 1 ), period ) .. number:sub( dpos ) end
+
+	return addCommas( number, period )
+
 end
