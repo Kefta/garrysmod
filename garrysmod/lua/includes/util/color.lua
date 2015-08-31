@@ -11,10 +11,28 @@ debug.getregistry().Color = COLOR
 	To easily create a colour table
 -----------------------------------------------------------]]
 function Color( r, g, b, a )
-
-	a = a or 255
-	return setmetatable( { r = math.min( tonumber(r), 255 ), g =  math.min( tonumber(g), 255 ), b =  math.min( tonumber(b), 255 ), a =  math.min( tonumber(a), 255 ) }, COLOR )
+	r = tonumber( r )
 	
+	if ( g != nil ) then
+		a = tonumber( a ) or 255
+		
+		return setmetatable( { r = math.min( r, 255 ), g =  math.min( tonumber( g ), 255 ), b =  math.min( tonumber( b ), 255 ), a =  math.min( a, 255 ) }, COLOR )	
+	end
+	
+	if ( r <= 0xFFFFFF ) then
+		a = 255
+	else
+		a = bit.band( bit.rshift( r, 24 ), 0xFF )
+	end
+	
+	return setmetatable( { r = bit.band( bit.rshift( r, 16 ), 0xFF ), g = bit.band( bit.rshift( r, 8 ), 0xFF ), b = bit.band( bit.rshift( r, 0 ), 0xFF ), a = a }, COLOR )   
+end
+
+--[[---------------------------------------------------------
+	Converts the color to a 
+-----------------------------------------------------------]]
+function COLOR:ToInt()
+	return bit.lshift( self.a, 24 ) + bit.lshift( self.r, 16 ) + bit.lshift( self.g, 8 ) + bit.lshift( self.b, 0 )
 end
 
 --[[---------------------------------------------------------
