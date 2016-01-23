@@ -44,7 +44,7 @@ end
 		Return true to not play normal sound
 -----------------------------------------------------------]]
 function GM:PlayerFootstep( ply, vPos, iFoot, strSoundName, fVolume, pFilter )
-
+	if ( !ply:Alive() ) then return true end
 	--[[
 	-- Draw effect on footdown
 	local effectdata = EffectData()
