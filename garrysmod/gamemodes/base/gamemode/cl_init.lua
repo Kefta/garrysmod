@@ -589,10 +589,11 @@ function GM:PostDrawViewModel( ViewModel, Player, Weapon )
 
 	if ( !IsValid( Weapon ) ) then return false end
 
-	local hands = Player:GetHands( ViewModel:ViewModelIndex() )
+	local index = ViewModel:ViewModelIndex()
+	local hands = Player:GetHands( index )
 	if ( IsValid( hands ) ) then
 
-		if ( Weapon.UsesHands == nil || !Weapon:UsesHands( ViewModel ) ) then
+		if ( Weapon.UsesHands == nil || !Weapon:UsesHands( index ) ) then
 
 			if ( not hook.Call( "PreDrawPlayerHands", self, hands, ViewModel, Player, Weapon ) ) then
 
