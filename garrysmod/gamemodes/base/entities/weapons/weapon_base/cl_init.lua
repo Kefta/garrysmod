@@ -11,6 +11,9 @@ SWEP.DrawWeaponInfoBox	= true					-- Should draw the weapon info box
 SWEP.BounceWeaponIcon   = true					-- Should the weapon icon bounce?
 SWEP.SwayScale			= 1.0					-- The scale of the viewmodel sway
 SWEP.BobScale			= 1.0					-- The scale of the viewmodel bob
+SWEP.UseHands			= false				-- Should the weapon draw c_hands? The gamemode must support it
+SWEP.UseHands1			= false				-- Draw hands for the second viewmodel if it's active
+SWEP.UseHands2			= false
 
 SWEP.RenderGroup 		= RENDERGROUP_OPAQUE
 
@@ -223,5 +226,15 @@ function SWEP:FireAnimationEvent( pos, ang, event, options )
 	
 		return true
 	end
+
+end
+
+--[[---------------------------------------------------------
+	Name: UsesHands
+	Desc: If the gamemode supports it, draw c_hands on the viewmodel
+-----------------------------------------------------------]]
+function SWEP:UsesHands( ViewModel )
+
+	return self[ "UseHands" .. ViewModel:ViewModelIndex() ] or false
 
 end
