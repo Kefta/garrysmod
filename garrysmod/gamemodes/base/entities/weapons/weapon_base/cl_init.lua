@@ -233,8 +233,12 @@ end
 	Name: UsesHands
 	Desc: If the gamemode supports it, draw c_hands on the viewmodel
 -----------------------------------------------------------]]
-function SWEP:UsesHands( ViewModel )
+function SWEP:UsesHands( index --[[= 0]] )
 
-	return self[ "UseHands" .. ViewModel:ViewModelIndex() ] or false
+	if ( index == nil or index == 0 ) then
+		return self.UseHands or false
+	end
+
+	return self[ "UseHands" .. index ] or false
 
 end
