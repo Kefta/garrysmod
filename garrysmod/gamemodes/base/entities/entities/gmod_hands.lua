@@ -27,6 +27,7 @@ function ENT:DoSetup( ply, spec, index --[[= 0]] )
 
 		end
 
+		return
 	end
 
 	-- Set these hands to the player
