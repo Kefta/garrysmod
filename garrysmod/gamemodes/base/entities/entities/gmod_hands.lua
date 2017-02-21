@@ -1,8 +1,9 @@
 
 AddCSLuaFile()
 
-ENT.Type = "anim"
-ENT.RenderGroup = RENDERGROUP_OTHER
+ENT.Type			= "anim"
+ENT.RenderGroup		= RENDERGROUP_OTHER
+
 
 function ENT:Initialize()
 
@@ -11,20 +12,31 @@ function ENT:Initialize()
 	self:SetNotSolid( true )
 	self:DrawShadow( false )
 	self:SetTransmitWithParent( true ) -- Transmit only when the viewmodel does!
-
+	
 end
 
-function ENT:DoSetup( ply, spec )
+function ENT:DoSetup( ply, spec, index --[[= 0]] )
+
+	local displayply = spec or ply
+	local vm = displayply:GetViewModel( index )
+	if ( not IsValid( vm ) ) then
+
+		if ( SERVER ) then
+
+			self:Remove()
+
+		end
+
+	end
 
 	-- Set these hands to the player
-	ply:SetHands( self )
+	ply:SetHands( self, index )
 	self:SetOwner( ply )
 
 	-- Which hands should we use? Let the gamemode decide
-	hook.Call( "PlayerSetHandsModel", GAMEMODE, spec or ply, self )
+	hook.Call( "PlayerSetHandsModel", GAMEMODE, displayply, self, index or 0 )
 
 	-- Attach them to the viewmodel
-	local vm = ( spec or ply ):GetViewModel( 0 )
 	self:AttachToViewmodel( vm )
 
 	vm:DeleteOnRemove( self )
@@ -46,7 +58,7 @@ function ENT:GetPlayerColor()
 
 end
 
-function ENT:ViewModelChanged( vm, old, new )
+function ENT:ViewModelChanged( vm )
 
 	-- Ignore other peoples viewmodel changes!
 	if ( vm:GetOwner() != self:GetOwner() ) then return end
@@ -61,7 +73,7 @@ function ENT:AttachToViewmodel( vm )
 	self:SetParent( vm )
 	self:SetMoveType( MOVETYPE_NONE )
 
-	self:SetPos( Vector( 0, 0, 0 ) )
-	self:SetAngles( Angle( 0, 0, 0 ) )
+	self:SetLocalPos( vector_origin )
+	self:SetLocalAngles( angle_zero )
 
 end
