@@ -42,6 +42,7 @@ function ENT:DoSetup( ply, spec, index --[[= 0]] )
 
 	vm:DeleteOnRemove( self )
 	ply:DeleteOnRemove( self )
+	self:Spawn()
 
 end
 
