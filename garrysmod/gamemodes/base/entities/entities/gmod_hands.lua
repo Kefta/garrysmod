@@ -12,12 +12,19 @@ function ENT:Initialize()
 	self:SetNotSolid( true )
 	self:DrawShadow( false )
 	self:SetTransmitWithParent( true ) -- Transmit only when the viewmodel does!
-	
+
+end
+
+function ENT:SetupDataTables()
+
+	self:NetworkVar( "Int", 0, "ViewModelIndex" )
+
 end
 
 function ENT:DoSetup( ply, spec, index --[[= 0]] )
 
 	local displayply = spec or ply
+	index = index or 0
 	local vm = displayply:GetViewModel( index )
 	if ( not IsValid( vm ) ) then
 
@@ -33,9 +40,10 @@ function ENT:DoSetup( ply, spec, index --[[= 0]] )
 	-- Set these hands to the player
 	ply:SetHands( self, index )
 	self:SetOwner( ply )
+	self:SetViewModelIndex( index )
 
 	-- Which hands should we use? Let the gamemode decide
-	hook.Call( "PlayerSetHandsModel", GAMEMODE, displayply, self, index or 0 )
+	hook.Call( "PlayerSetHandsModel", GAMEMODE, displayply, self, index )
 
 	-- Attach them to the viewmodel
 	self:AttachToViewmodel( vm )
@@ -63,9 +71,11 @@ end
 function ENT:ViewModelChanged( vm )
 
 	-- Ignore other peoples viewmodel changes!
-	if ( vm:GetOwner() != self:GetOwner() ) then return end
+	if ( vm:GetOwner() == self:GetOwner() && self:GetViewModelIndex() == vm:ViewModelIndex() ) then
 
-	self:AttachToViewmodel( vm )
+		self:AttachToViewmodel( vm )
+
+	end
 
 end
 
