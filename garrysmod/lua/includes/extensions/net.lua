@@ -60,7 +60,7 @@ end
 function net.ReadEntity()
 
 	local i = net.ReadUInt( 16 )
-	if ( !i ) then return end
+	if ( !i ) then return NULL end
 	
 	return Entity( i )
 	
