@@ -181,6 +181,8 @@ local function CreateSpawnMenu()
 
 	end
 
+	hook.Run( "PreReloadToolsMenu" )
+
 	-- Start Fresh
 	spawnmenu.ClearToolMenus()
 
@@ -204,8 +206,11 @@ local function CreateSpawnMenu()
 	-- to populate them with tools.
 	hook.Run( "PopulateToolMenu" )
 
-	g_SpawnMenu = vgui.Create( "SpawnMenu" )
-	g_SpawnMenu:SetVisible( false )
+	if ( IsValid( g_SpawnMenu ) ) then
+		g_SpawnMenu = vgui.Create( "SpawnMenu" )
+		g_SpawnMenu:SetVisible( false )
+		hook.Run( "SpawnMenuCreated", g_SpawnMenu )
+	end
 
 	CreateContextMenu()
 
@@ -219,20 +224,21 @@ concommand.Add( "spawnmenu_reload", CreateSpawnMenu )
 function GM:OnSpawnMenuOpen()
 
 	-- Let the gamemode decide whether we should open or not..
-	if ( !hook.Run( "SpawnMenuOpen" ) ) then return end
+	if ( !hook.Call( "SpawnMenuOpen", self ) ) then return end
 
 	if ( IsValid( g_SpawnMenu ) ) then
-
 		g_SpawnMenu:Open()
 		menubar.ParentTo( g_SpawnMenu )
-
 	end
+
+	hook.Call( "SpawnMenuOpened", self )
 
 end
 
 function GM:OnSpawnMenuClose()
 
 	if ( IsValid( g_SpawnMenu ) ) then g_SpawnMenu:Close() end
+	hook.Call( "SpawnMenuClosed", self )
 
 end
 
