@@ -12,8 +12,6 @@ if ( CLIENT ) then
 		if ( not IsValid( ply ) ) then return false end
 
 		local view = ply:GetViewEntity()
-		if ( !IsValid( view ) ) then return end
-
 		local dist = self.MaxWorldTipDistance
 		dist = dist * dist
 
