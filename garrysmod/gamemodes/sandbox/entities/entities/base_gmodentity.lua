@@ -12,11 +12,28 @@ if ( CLIENT ) then
 		if ( not IsValid( ply ) ) then return false end
 
 		local view = ply:GetViewEntity()
-		local dist = self.MaxWorldtipDistance
-		dist = dist * dist
-		local pos = view:IsPlayer() && view:GetShootPos() || view:GetPos()
+		if ( !IsValid( view ) ) then return end
 
-		return pos:DistToSqr( self:GetPos() ) <= dist && ply:GetEyeTrace().Entity == self
+		local dist = self.MaxWorldTipDistance
+		dist = dist * dist
+
+		-- If we're spectating a player, perform an eye trace
+		if ( view:IsPlayer() ) then
+			return view:EyePos():DistToSqr( self:GetPos() ) <= dist && view:GetEyeTrace().Entity == self
+		end
+
+		-- If we're not spectating a player, perform a manual trace from the entity's position
+		local pos = view:GetPos()
+
+		if ( pos:DistToSqr( self:GetPos() ) <= dist ) then
+			return util.TraceLine( {
+				start = pos,
+				endpos = pos + ( view:GetAngles():Forward() * dist ),
+				filter = view
+			} ).Entity == self
+		end
+
+		return false
 	end
 
 	function ENT:Think()
