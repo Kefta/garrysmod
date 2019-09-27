@@ -1,5 +1,39 @@
 local COLOR = {}
-COLOR.__index = COLOR
+
+local allowed_keys = { r = true, g = true, b = true, a = true }
+
+COLOR.__index = function( col, k )
+	if ( k == 1 ) then
+		return rawget( col, "r" )
+	end
+	if ( k == 2 ) then
+		return rawget( col, "g" )
+	end
+	if ( k == 3 ) then
+		return rawget( col, "b" )
+	end
+	if ( k == 4 ) then
+		return rawget( col, "a" )
+	end
+
+	-- If these somehow become unset, don't index the Color metatable
+	if ( allowed_keys[ k ] ) then return nil end
+
+	return COLOR[ k ]
+end
+
+COLOR.__newindex = function( col, k, v )
+	if ( allowed_keys[ k ] ) then
+		-- If a valid component was set to nil, allow setting it back to a number
+		if ( isnumber( v ) ) then
+			rawset( col, k, v )
+		else
+			ErrorNoHaltStack( "attempted to set key \"" .. k .. "\" on Color to " .. type( v ) .. ", number expected", 2 )
+		end
+	else
+		ErrorNoHaltStack( "attempted to alter invalid key \"" .. k .. "\" on Color", 2 )
+	end
+end
 
 --[[---------------------------------------------------------
 	Register our metatable to make it accessible using FindMetaTable
@@ -11,10 +45,12 @@ debug.getregistry().Color = COLOR
 	To easily create a color table
 -----------------------------------------------------------]]
 function Color( r, g, b, a )
-
-	a = a or 255
-	return setmetatable( { r = math.min( tonumber(r), 255 ), g =  math.min( tonumber(g), 255 ), b =  math.min( tonumber(b), 255 ), a =  math.min( tonumber(a), 255 ) }, COLOR )
-	
+	return setmetatable( {
+		r = math.max( math.min( tonumber(r), 255 ), 0 ),
+		g = math.max( math.min( tonumber(g), 255 ), 0 ),
+		b = math.max( math.min( tonumber(b), 255 ), 0 ),
+		a = a == nil && 255 || math.max( math.min( tonumber(a), 255 ), 0 )
+	}, COLOR )
 end
 
 --[[---------------------------------------------------------
